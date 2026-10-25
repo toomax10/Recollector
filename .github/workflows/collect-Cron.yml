@@ -30,7 +30,7 @@ jobs:
         rclone_config: ${{ secrets.RCLONE_CONF }}
 
     - name: Descargar base de datos desde Drive
-      run: rclone copy gdrive:ruta/a/tu/archivo/opciones.db ./
+      run: rclone copy gdrive:Trading_Reports/opciones.db ./
 
     - name: Ejecutar script recolector
       run: python recolector_opciones.py
@@ -39,4 +39,4 @@ jobs:
         API_KEY: ${{ secrets.API_KEY }}
 
     - name: Subir base de datos actualizada a Drive
-      run: rclone copy ./opciones.db gdrive:ruta/a/tu/archivo/
+      run: rclone copy ./opciones.db gdrive:Trading_Reports/
