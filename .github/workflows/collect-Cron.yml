@@ -1,0 +1,42 @@
+name: Ejecutor Diario de Opciones
+
+on:
+  schedule:
+    # 9:45 AM, 1:15 PM y 3:45 PM NY (Hora UTC)
+    - cron: '45 14 * * 1-5'
+    - cron: '15 18 * * 1-5'
+    - cron: '45 20 * * 1-5'
+  workflow_dispatch: # Te permite probarlo manualmente
+
+jobs:
+  recolectar:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Descargar repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Instalar dependencias
+      run: pip install yfinance numpy pandas
+
+    # PASO CLAVE: Instalar y configurar Rclone
+    - name: Configurar Rclone
+      uses: AnimMouse/setup-rclone@v1
+      with:
+        rclone_config: ${{ secrets.RCLONE_CONF }}
+
+    - name: Descargar base de datos desde Drive
+      run: rclone copy gdrive:ruta/a/tu/archivo/opciones.db ./
+
+    - name: Ejecutar script recolector
+      run: python recolector_opciones.py
+      env:
+        # Pasa tus credenciales necesarias si el script las usa
+        API_KEY: ${{ secrets.API_KEY }}
+
+    - name: Subir base de datos actualizada a Drive
+      run: rclone copy ./opciones.db gdrive:ruta/a/tu/archivo/
