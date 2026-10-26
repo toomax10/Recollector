@@ -44,3 +44,5 @@ jobs:
       env:
         # Inyecta el contenido de tu archivo JSON directamente al entorno
         GDRIVE_CREDENTIALS: ${{ secrets.GCP_JSON }}
+
+# Fin de YAML con SCHEDULE CRON
