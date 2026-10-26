@@ -3,14 +3,29 @@ name: Ejecutor Diario de Opciones
 on:
   schedule:
     # 9:45 AM, 1:15 PM y 3:45 PM NY (Hora UTC)
-    - cron: '45 14 * * 1-5'
-    - cron: '15 18 * * 1-5'
-    - cron: '45 20 * * 1-5'
+
+    # Dos horas UTC por captura; el script solo captura dentro de su ventana en hora de Nueva York
+    # (así funciona igual antes y después del cambio de horario del 1-nov).
+    - cron: '15 14 * * 1-5'   # 10:15 EDT (verano)
+    - cron: '15 15 * * 1-5'   # 10:15 EST (invierno)
+    - cron: '15 18 * * 1-5'   # 14:15 EDT
+    - cron: '15 19 * * 1-5'   # 14:15 EST
+    - cron: '45 19 * * 1-5'   # 15:45 EDT
+    - cron: '45 20 * * 1-5'   # 15:45 EST
+    
   workflow_dispatch: # Te permite probarlo manualmente
+
+concurrency:
+  group: opciones-db
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   recolectar:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10  
     steps:
     - name: Descargar repositorio
       uses: actions/checkout@v4
@@ -25,7 +40,7 @@ jobs:
       run: pip install yfinance numpy pandas google-api-python-client google-auth
 
     - name: Ejecutar script recolector
-      run: python recolector_opciones.py
+      run: python recolector_opciones.py --ventana-ny
       env:
         # Inyecta el contenido de tu archivo JSON directamente al entorno
         GDRIVE_CREDENTIALS: ${{ secrets.GCP_JSON }}
