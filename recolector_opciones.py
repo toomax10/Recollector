@@ -65,7 +65,6 @@ REFS = {"7d": (7, 4, 12), "30d": (30, 20, 40), "60d": (60, 45, 75)}      # (obje
 MIN_CALIDAD = 0.60                                                      # fracción mínima de straddles ATM con cotización válida
 IV_RANK_MIN_OBS = 60
 
-
 # --------------------------------------------------------------------------------------------------
 # Funciones de Acceso directo a Google Drive
 # --------------------------------------------------------------------------------------------------
@@ -181,6 +180,7 @@ def abrir(ruta: str) -> sqlite3.Connection:
 # --------------------------------------------------------------------------------------------------
 # Drive (trabajo local + copia atómica)
 # --------------------------------------------------------------------------------------------------
+'''
 def _montar_drive() -> bool:
     if os.path.isdir(RAIZ_DRIVE):
         return True
@@ -194,11 +194,9 @@ def _montar_drive() -> bool:
         print(f"AVISO recolector: no se pudo montar Drive ({type(e).__name__}: {e}); la base quedará solo en local")
     return os.path.isdir(RAIZ_DRIVE)
 
-'''
 def traer_de_drive(local: str, remoto: str) -> None:
     if os.path.exists(remoto) and (not os.path.exists(local) or os.path.getmtime(remoto) > os.path.getmtime(local)):
         shutil.copy2(remoto, local)
-
 
 def subir_a_drive(local: str, remoto: str) -> None:
     os.makedirs(os.path.dirname(remoto), exist_ok=True)
@@ -207,7 +205,6 @@ def subir_a_drive(local: str, remoto: str) -> None:
     tmp = remoto + ".tmp"
     shutil.copy2(local, tmp)
     os.replace(tmp, remoto)                                                                 # reemplazo atómico
-'''
 
 def rutas_db(db: Optional[str] = None) -> Tuple[str, Optional[str]]:
     """(base de trabajo, copia en Drive o None)."""
@@ -216,7 +213,30 @@ def rutas_db(db: Optional[str] = None) -> Tuple[str, Optional[str]]:
     if _montar_drive():
         return DB_LOCAL, os.path.join(CARPETA_DRIVE, NOMBRE_DB)
     return NOMBRE_DB, None
+'''
 
+def rutas_db(db: Optional[str] = None) -> Tuple[str, Optional[str]]:
+    """Determina si trabajamos solo en local o con Google Drive vía API."""
+    if db:
+        return db, None
+    
+    # Detectar si existen las credenciales en el entorno actual
+    credenciales_activas = False
+    if os.environ.get("GDRIVE_CREDENTIALS"):
+        credenciales_activas = True
+    else:
+        try:
+            from google.colab import userdata
+            if userdata.get("GDRIVE_CREDENTIALS"):
+                credenciales_activas = True
+        except ImportError:
+            pass
+            
+    if credenciales_activas:
+        # Retorna el nombre local y una "bandera" (flag) para activar la sincronización
+        return NOMBRE_DB, "usar_api_drive"
+        
+    return NOMBRE_DB, None
 
 # --------------------------------------------------------------------------------------------------
 # Captura
