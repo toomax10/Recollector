@@ -21,22 +21,11 @@ jobs:
         python-version: '3.12'
 
     - name: Instalar dependencias
-      run: pip install yfinance numpy pandas
-
-    # PASO CLAVE: Instalar y configurar Rclone
-    - name: Configurar Rclone
-      uses: AnimMouse/setup-rclone@v1
-      with:
-        rclone_config: ${{ secrets.RCLONE_CONF }}
-
-    - name: Descargar base de datos desde Drive
-      run: rclone copy gdrive:Trading_Reports/opciones.db ./
+      #run: pip install yfinance numpy pandas
+      run: pip install yfinance numpy pandas google-api-python-client google-auth
 
     - name: Ejecutar script recolector
       run: python recolector_opciones.py
       env:
-        # Pasa tus credenciales necesarias si el script las usa
-        API_KEY: ${{ secrets.API_KEY }}
-
-    - name: Subir base de datos actualizada a Drive
-      run: rclone copy ./opciones.db gdrive:Trading_Reports/
+        # Inyecta el contenido de tu archivo JSON directamente al entorno
+        GDRIVE_CREDENTIALS: ${{ secrets.GCP_JSON }}
