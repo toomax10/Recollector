@@ -1,7 +1,7 @@
 name: Ejecutor Diario de Opciones
 
 on:
-  schedule:
+  #schedule:
     # 9:45 AM, 1:15 PM y 3:45 PM NY (Hora UTC)
 
     # Dos horas UTC por captura; el script solo captura dentro de su ventana en hora de Nueva York
