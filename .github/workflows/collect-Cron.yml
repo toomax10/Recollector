@@ -6,12 +6,12 @@ on:
 
     # Dos horas UTC por captura; el script solo captura dentro de su ventana en hora de Nueva York
     # (así funciona igual antes y después del cambio de horario del 1-nov).
-    - cron: '15 14 * * 1-5'   # 10:15 EDT (verano)
-    - cron: '15 15 * * 1-5'   # 10:15 EST (invierno)
-    - cron: '15 18 * * 1-5'   # 14:15 EDT
-    - cron: '15 19 * * 1-5'   # 14:15 EST
-    - cron: '45 19 * * 1-5'   # 15:45 EDT
-    - cron: '45 20 * * 1-5'   # 15:45 EST
+    #- cron: '15 14 * * 1-5'   # 10:15 EDT (verano)
+    #- cron: '15 15 * * 1-5'   # 10:15 EST (invierno)
+    #- cron: '15 18 * * 1-5'   # 14:15 EDT
+    #- cron: '15 19 * * 1-5'   # 14:15 EST
+    #- cron: '45 19 * * 1-5'   # 15:45 EDT
+    #- cron: '45 20 * * 1-5'   # 15:45 EST
     
   workflow_dispatch: # Te permite probarlo manualmente
 
